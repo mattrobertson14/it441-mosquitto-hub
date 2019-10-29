@@ -65,6 +65,7 @@ void handleDistance(String message){
   if (!doorOpen){
     return;
   }
+  int distance = message.toInt();
   if (distance >= 25){
     setLED("green");
     flash = false;
@@ -128,7 +129,7 @@ void loop(){
     timer_pointer = millis();
     if (getLED() == "red"){
       setLED("off");
-    } else (getLED() == "off"){
+    } else if (getLED() == "off"){
       setLED("red");
     }    
   }

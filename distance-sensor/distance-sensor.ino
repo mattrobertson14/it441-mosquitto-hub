@@ -12,6 +12,10 @@ const char* passwd1 = HOME_WIFI_PASSWORD;
 const char* ssid2 = MATT_HOTSPOT_SSID;
 const char* passwd2 = MATT_HOTSPOT_PASSWORD;
 
+const int trigPin = D7;
+const int echoPin = D6;
+
+long distance, duration;
 unsigned long timer_pointer = 0;
 
 void connectToWifi(){
@@ -74,6 +78,6 @@ void loop(){
   client.loop();
   if (millis() > timer_pointer + 1000){
     timer_pointer = millis();
-    client.publish("/distance/p", String(distance));
+    client.publish("/distance/p", String(distance).c_str());
   }
 }
