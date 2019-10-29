@@ -55,6 +55,10 @@ void callback(char* _topic, byte* payload, unsigned int length) {
 
   if (topic == "/door" || topic == "/door/p"){
     doorOpen = (message == "1");
+    if (!doorOpen){
+      setLED("off");
+      flash = false; 
+    }
   }
   if (topic == "/distance" || topic == "/distance/p"){
     handleDistance(message);
@@ -63,6 +67,7 @@ void callback(char* _topic, byte* payload, unsigned int length) {
 
 void handleDistance(String message){
   if (!doorOpen){
+    flash = false;
     return;
   }
   int distance = message.toInt();
@@ -75,7 +80,7 @@ void handleDistance(String message){
   } else if (15 > distance && distance >= 5){
     setLED("red");
     flash = false;
-  } else if (distance < 5) {
+  } else if (distance < 5 && !flash) {
     setLED("red");
     flash = true;
   }
@@ -87,6 +92,8 @@ void reconnectToHub() {
       Serial.println("Connected to MQTT Hub");
       String message = "Stoplight (" + device_name + ") connected @ " + WiFi.localIP().toString();
       client.publish("/connections/stop-light", message.c_str());
+      client.subscribe("/door/#");
+      client.subscribe("/distance/#");
     } else {
       Serial.println("Connection to MQTT failed, trying again...");
       delay(3000);
@@ -117,6 +124,8 @@ void setup(){
   pinMode(RED_LIGHT, OUTPUT);
   pinMode(YEL_LIGHT, OUTPUT);
   pinMode(GRN_LIGHT, OUTPUT);
+
+  client.setCallback(callback);
 }
 
 void loop(){

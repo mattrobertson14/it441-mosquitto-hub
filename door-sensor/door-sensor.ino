@@ -14,7 +14,7 @@ const char* passwd2 = MATT_HOTSPOT_PASSWORD;
 
 bool prevDoor = false;
 bool door = false;
-int SENSORPIN = D6;
+int SENSOR_PIN = D6;
 unsigned long timer_pointer = 0;
 
 void connectToWifi(){
@@ -56,7 +56,7 @@ void reconnectToHub() {
 void setup(){
   Serial.begin(115200);
   connectToWifi();
-  pinMode(SENSORPIN, INPUT);
+  pinMode(SENSOR_PIN, INPUT_PULLUP);
 }
 
 void loop(){
@@ -66,9 +66,14 @@ void loop(){
 
   client.loop();
 
-  door = (digitalRead(SENSORPIN) == HIGH);
+  if (digitalRead(SENSOR_PIN) == HIGH){
+    door = true;
+  } else {
+    door = false;
+  }
 
   if (prevDoor != door){
+    Serial.println(door);
     client.publish("/door", (door?"1":"0"));
     prevDoor = door;
   }
